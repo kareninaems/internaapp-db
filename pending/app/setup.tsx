@@ -13,6 +13,7 @@ import {
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, typography, spacing, radius } from '../../pending/theme';
+import { saveLaudo, loadLaudo, deleteLaudo } from '../src/laudo';
 
 const KEYS_TO_RESET = [
   'medusa_onboarding_v1',
@@ -22,12 +23,23 @@ const KEYS_TO_RESET = [
 ];
 
 export default function Setup() {
-  const [supabaseKey, setSupabaseKey] = useState('');
-  const [saved, setSaved] = useState(false);
+  const [supabaseKey, setSupabaseKey]   = useState('');
+  const [saved, setSaved]               = useState(false);
+  const [laudo, setLaudo]               = useState('');
+  const [laudoFonte, setLaudoFonte]     = useState('');
+  const [laudoSaved, setLaudoSaved]     = useState(false);
+  const [laudoLoaded, setLaudoLoaded]   = useState(false);
 
   useEffect(() => {
     AsyncStorage.getItem('medusa_supabase_anon_key').then(v => {
       if (v) setSupabaseKey(v);
+    });
+    loadLaudo().then(l => {
+      if (l) {
+        setLaudo(l.conteudo);
+        setLaudoFonte(l.fonte ?? '');
+        setLaudoLoaded(true);
+      }
     });
   }, []);
 
@@ -44,6 +56,30 @@ export default function Setup() {
       [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Apagar', style: 'destructive', onPress: handleReset },
+      ]
+    );
+  }
+
+  async function handleSaveLaudo() {
+    if (!laudo.trim()) return;
+    await saveLaudo({ conteudo: laudo.trim(), fonte: laudoFonte.trim() || undefined });
+    setLaudoSaved(true);
+    setLaudoLoaded(true);
+    setTimeout(() => setLaudoSaved(false), 2000);
+  }
+
+  function confirmDeleteLaudo() {
+    Alert.alert(
+      'Remover laudo?',
+      'O laudo será apagado do servidor. O onboarding continua ativo.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Remover', style: 'destructive', onPress: async () => {
+          await deleteLaudo();
+          setLaudo('');
+          setLaudoFonte('');
+          setLaudoLoaded(false);
+        }},
       ]
     );
   }
@@ -94,6 +130,54 @@ export default function Setup() {
           >
             <Text style={styles.btnText}>{saved ? 'Salvo ✓' : 'Salvar'}</Text>
           </TouchableOpacity>
+        </View>
+
+        {/* Divisor */}
+        <View style={styles.divider} />
+
+        {/* Seção: Laudo */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Laudo clínico</Text>
+          <Text style={styles.sectionDesc}>
+            Cole aqui o conteúdo do seu laudo. Fica armazenado com segurança e é usado pela Medusa para calibrar respostas ao seu perfil real.
+          </Text>
+          <TextInput
+            style={styles.input}
+            value={laudoFonte}
+            onChangeText={setLaudoFonte}
+            placeholder="Fonte: CID-11, DSM-5, neuropsicológico..."
+            placeholderTextColor={colors.textMuted}
+            autoCorrect={false}
+          />
+          <TextInput
+            style={[styles.input, styles.inputMultiline]}
+            value={laudo}
+            onChangeText={setLaudo}
+            placeholder="Cole aqui o texto do laudo..."
+            placeholderTextColor={colors.textMuted}
+            multiline
+            textAlignVertical="top"
+            autoCorrect={false}
+          />
+          <TouchableOpacity
+            style={[styles.btn, laudoSaved && styles.btnSaved]}
+            onPress={handleSaveLaudo}
+            disabled={!laudo.trim()}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.btnText}>
+              {laudoSaved ? 'Salvo ✓' : laudoLoaded ? 'Atualizar laudo' : 'Salvar laudo'}
+            </Text>
+          </TouchableOpacity>
+          {laudoLoaded && (
+            <TouchableOpacity
+              style={[styles.btn, styles.btnOutline]}
+              onPress={confirmDeleteLaudo}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.btnText, styles.btnTextOutline]}>Remover laudo</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Divisor */}
@@ -198,6 +282,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm + 2,
     fontSize: typography.sizeSM,
     color: colors.textPrimary,
+  },
+  inputMultiline: {
+    height: 160,
+    paddingTop: spacing.sm + 2,
+    lineHeight: typography.lineHeightBase,
   },
   btn: {
     backgroundColor: colors.accent,
