@@ -2,17 +2,28 @@ import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { View, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
-import { getSession } from '../src/auth';
+import { supabase } from '../src/auth';
 import { colors } from '../../pending/theme';
 
 export default function Layout() {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    getSession().then(session => {
+    // Verifica sessão inicial
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) router.replace('/login');
       setChecking(false);
     });
+
+    // Escuta mudanças de estado em tempo real
+    // Cobre: expiração de token, logout, revogação pelo Apple
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.replace('/login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   if (checking) {

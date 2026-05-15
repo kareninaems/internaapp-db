@@ -26,4 +26,4 @@ jwt_expiry = 3600
 enable_signup = false
 
 [functions.claude-proxy]
-verify_jwt = false
+verify_jwt = true

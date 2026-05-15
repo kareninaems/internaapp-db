@@ -11,7 +11,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { colors, typography, spacing, radius } from '../../pending/theme';
 import { saveLaudo, loadLaudo, deleteLaudo } from '../src/laudo';
 
@@ -31,7 +31,7 @@ export default function Setup() {
   const [laudoLoaded, setLaudoLoaded]   = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem('medusa_supabase_anon_key').then(v => {
+    SecureStore.getItemAsync('medusa_supabase_anon_key').then(v => {
       if (v) setSupabaseKey(v);
     });
     loadLaudo().then(l => {
@@ -44,7 +44,7 @@ export default function Setup() {
   }, []);
 
   async function handleSave() {
-    await AsyncStorage.setItem('medusa_supabase_anon_key', supabaseKey.trim());
+    await SecureStore.setItemAsync('medusa_supabase_anon_key', supabaseKey.trim());
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }

@@ -12,6 +12,8 @@ import {
   InputAccessoryView,
   ActivityIndicator,
   StatusBar,
+  AppState,
+  AppStateStatus,
 } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -36,6 +38,10 @@ export default function Chat() {
   const [energyLevel, setEnergyLevel] = useState<string | null>(null);
   const listRef = useRef<FlatList>(null);
   const inputRef = useRef<TextInput>(null);
+  const messagesRef = useRef<Message[]>([]);
+
+  // Mantém ref sincronizada com state para uso no AppState handler
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
 
   useEffect(() => {
     (async () => {
@@ -48,6 +54,21 @@ export default function Chat() {
         setMessages([{ role: 'assistant', content: greeting }]);
       }
     })();
+
+    // Salva memória ao ir para background (evita perda por force-quit)
+    const subscription = AppState.addEventListener('change', async (state: AppStateStatus) => {
+      if (state === 'background' || state === 'inactive') {
+        const current = messagesRef.current;
+        if (current.length > 1) {
+          try {
+            const memory = await loadMemory();
+            await saveMemory(current, memory);
+          } catch (_) {}
+        }
+      }
+    });
+
+    return () => subscription.remove();
   }, []);
 
   function buildGreeting(energy: string | null, memory: any): string {
