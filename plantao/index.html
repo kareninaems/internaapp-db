@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0f6b5c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Plantão">
+<title>Passagem de plantão</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<div class="head">
+  <div><h1>Passagem de plantão</h1><p class="sub">Cartões por leito para conferência</p></div>
+  <button class="theme" id="tb" type="button">Tema</button>
+</div>
+<div class="banner" id="banner"></div>
+
+<div class="panel">
+  <div class="win">
+    <label for="wsIn">Início do plantão anterior</label>
+    <input type="datetime-local" id="wsIn" step="3600">
+  </div>
+  <div class="note mt6" id="win" ></div>
+  <div class="sum" id="sum" aria-label="Resumo por leito"></div>
+</div>
+
+<div class="bar">
+  <label class="chk"><input type="checkbox" id="onlyPend"> Só leitos com pendências</label>
+  <button class="btn" type="button" id="copyBtn">Copiar passagem</button>
+  <button class="btn ghost" type="button" id="clrBtn">Apagar observações</button>
+</div>
+<div class="status" id="status" role="status" aria-live="polite"></div>
+<div class="panel" id="outwrap" hidden>
+  <h2>Texto da passagem</h2>
+  <textarea class="out" id="out" readonly aria-label="Texto da passagem para copiar"></textarea>
+</div>
+
+<div id="cards"></div>
+
+<div class="panel">
+  <h2>Importar dados</h2>
+  <p class="note mt0">O arquivo é lido neste navegador e não é enviado a nenhum servidor. Só as observações digitadas ficam guardadas neste aparelho; apague-as ao terminar.</p>
+  <label for="file" class="note">PDF do prontuário ou arquivo JSON</label><br>
+  <input type="file" id="file" accept=".pdf,.json,application/pdf,application/json">
+  <div class="status" id="fstatus" role="status" aria-live="polite"></div>
+  <div id="pdfout" hidden>
+    <h3 class="h3s">Texto extraído do PDF</h3>
+    <pre id="pdftext"></pre>
+  </div>
+  <details class="mt8">
+    <summary>Formato do JSON aceito</summary>
+    <p class="note">Lista de leitos. Cada medida é uma lista de pares <code>["AAAA-MM-DDTHH:MM", valor]</code>; use <code>null</code> no lugar do horário quando o PDF não traz hora.</p>
+    <pre>[{"leito":"04","nome":"Nome","idade":60,"intern":"2026-10-28",
+  "caso":"Resumo do caso","peso":75,
+  "m":{"PAS":[["2026-10-30T08:00",120]],"FC":[],"HGT":[],"TEMP":[]},
+  "evac":[["2026-10-30T11:00","Presente"]],
+  "urine":[["2026-10-30T08:00",300]],
+  "meds":[{"c":"ATB","n":"Meropenem 1 g IV 8/8h","s":"adm",
+           "t":["2026-10-30T10:00"]}]}]</pre>
+    <p class="note"><code>s</code> pode ser <code>adm</code> (administrado), <code>presc</code> (prescrito), <code>unk</code> (origem não identificada) ou <code>none</code> (sem registro).</p>
+  </details>
+  <button class="btn ghost mt8" type="button" id="sampleBtn" hidden>Voltar aos dados de exemplo</button>
+</div>
+
+<p class="note">Regras aplicadas: mínimo e máximo calculados por código no plantão anterior (início incluído, fim excluído). Registro sem horário ou fora da janela não entra no cálculo e aparece em "Registros fora do cálculo". Dado ausente aparece como "Sem registro no PDF".</p>
+</main>
+<script src="vendor/pdf.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
