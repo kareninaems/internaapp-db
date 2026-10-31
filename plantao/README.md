@@ -9,9 +9,12 @@ Rascunho para conferência, não é registro clínico.
 
 Service worker e instalação como app exigem HTTPS ou `localhost`.
 
-## Publicar
+## Publicar (privado)
 
-Qualquer hospedagem estática com HTTPS (GitHub Pages, Netlify, Cloudflare Pages, Vercel) servindo a pasta `plantao/`.
+Cloudflare Pages servindo a pasta `plantao/`, protegido por Cloudflare Access (login por e-mail, só e-mails liberados):
+- Build command: vazio. Output directory: `plantao`.
+- Ativar a política de acesso do projeto (protege também os previews) e restringir aos e-mails da equipe.
+- Não usar o GitHub Pages: fora do plano Enterprise o site é público.
 
 ## Privacidade
 
