@@ -12,7 +12,7 @@ Service worker e instalação como app exigem HTTPS ou `localhost`.
 ## Publicar (privado)
 
 Cloudflare Pages servindo a pasta `plantao/`, protegido por Cloudflare Access (login por e-mail, só e-mails liberados):
-- Build command: vazio. Output directory: `plantao`.
+- Fluxo de Workers: build command vazio, deploy command `npx wrangler deploy`, raiz `/`. O `wrangler.jsonc` na raiz do repo aponta para a pasta `plantao/` (há outro dentro de `plantao/`, para o caso de a raiz do build ser essa pasta).
 - Ativar a política de acesso do projeto (protege também os previews) e restringir aos e-mails da equipe.
 - Não usar o GitHub Pages: fora do plano Enterprise o site é público.
 
