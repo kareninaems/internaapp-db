@@ -24,6 +24,11 @@ Cloudflare Pages servindo a pasta `plantao/`, protegido por Cloudflare Access (l
 
 ## Estado
 
+- Importação do PDF "Balanço Hídrico" (um ou vários leitos, uma página por leito): pronta. Lê o texto embutido e atribui cada valor à coluna de hora pela posição. A janela é ajustada para 07:00 a 07:00 da data do PDF.
+- O PDF não traz peso, data de internação nem resumo do caso. O peso é digitado em cada cartão (guardado só neste navegador).
+- Conferências automáticas: soma de cada linha contra o total do PDF, ganhos menos perdas contra o balanço, e PAD maior que PAS.
+- Medicações: o PDF traz só volumes de infusão, não dose nem antibiótico administrado. As linhas ficam como "volume registrado".
+- Evacuação: o significado de "-" e "0" não consta no PDF; só "+", "++" e "+++" são tratados como evacuação.
 - Importação por JSON: pronta (formato na própria tela).
-- Importação por PDF: extrai o texto. Montar os cartões a partir do PDF depende do layout do documento real.
 - Ao mudar arquivos do app, aumentar `CACHE` em `sw.js`.
+- Não colocar PDFs de pacientes neste repositório.

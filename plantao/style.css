@@ -14,7 +14,7 @@ h2{font:700 1.05rem/1.2 Georgia,serif;margin:0 0 6px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:.9rem;margin-bottom:12px}
 .panel label{font-weight:600}
 .win{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
-input[type=datetime-local]{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 8px;max-width:100%}
+input[type=datetime-local],input[type=number]{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 8px;max-width:100%}
 .sum{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .sbtn{font:inherit;font-size:.85rem;font-weight:600;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:5px 10px;cursor:pointer}
 .sbtn.w{background:var(--warnbg);color:var(--warn);border-color:var(--warn)}
@@ -54,3 +54,4 @@ code{font:.85em ui-monospace,Menlo,Consolas,monospace;background:var(--bg);borde
 .err{color:var(--bad);font-weight:600}
 .mt0{margin-top:0}.mt6{margin-top:6px}.mt8{margin-top:8px}.h3s{font-size:.9rem;margin:8px 0 0}.sumnote{align-self:center}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+.bh{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:6px}.pesoin{margin:2px 0 8px}.pesoin input{width:7em}
